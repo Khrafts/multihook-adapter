@@ -22,7 +22,7 @@ contract TestMultiHookAdapter is MultiHookAdapterBase {
     /// @notice Implement registerHooks to make this class concrete
     /// @param key The PoolKey identifying the pool for which to register hooks
     /// @param hookAddresses The ordered list of hook contract addresses to attach
-    function registerHooks(PoolKey calldata key, address[] calldata hookAddresses) external override {
+    function registerHooks(PoolKey calldata key, address[] calldata hookAddresses) public override {
         _registerHooks(key, hookAddresses);
     }
 

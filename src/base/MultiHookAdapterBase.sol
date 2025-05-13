@@ -66,7 +66,7 @@ abstract contract MultiHookAdapterBase is BaseHook, IMultiHookAdapterBase {
     /// @param key The PoolKey identifying the pool for which to register hooks.
     /// @param hookAddresses The ordered list of hook contract addresses to attach.
     /// Each hook in the list will be invoked in sequence for each relevant callback.
-    function registerHooks(PoolKey calldata key, address[] calldata hookAddresses) external virtual override {
+    function registerHooks(PoolKey calldata key, address[] calldata hookAddresses) public virtual override {
         _registerHooks(key, hookAddresses);
     }
 
