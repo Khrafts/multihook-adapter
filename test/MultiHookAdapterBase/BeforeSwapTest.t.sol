@@ -393,8 +393,9 @@ contract BeforeSwapTest is MultiHookAdapterBaseTest {
         (bytes4 selector, BeforeSwapDelta resultDelta, uint24 resultFee) =
             adapter.beforeSwap(sender, testPoolKey, testParams, hookData);
 
-        // Verify that the last hook's fee override was used
-        assertEq(resultFee, fee2, "Last hook's fee override should be used");
+        // Verify that the weighted average fee was used (default method)
+        // (100*1 + 200*1) / (1+1) = 150
+        assertEq(resultFee, 150, "Weighted average fee should be used (default method)");
 
         // Log for clarity
         console.log("First hook fee:", fee1);
