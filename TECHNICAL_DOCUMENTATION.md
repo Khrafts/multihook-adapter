@@ -127,7 +127,7 @@ constructor(
 **Concrete implementation with fixed hook sets**
 
 ```solidity
-contract MultiHookAdapter is MultiHookAdapterBaseV2 {
+contract MultiHookAdapter is MultiHookAdapterBase {
     // Immutable hook registration (cannot be changed after deployment)
     // Deterministic pool behavior for liquidity providers
     // Gas-optimized for fixed-strategy pools
@@ -139,7 +139,7 @@ contract MultiHookAdapter is MultiHookAdapterBaseV2 {
 - Core infrastructure pools requiring stability guarantees
 - Audited hook combinations with validated security properties
 
-### 4. PermissionedMultiHookAdapter
+### 3. PermissionedMultiHookAdapter
 **Governance-controlled implementation with dynamic hook management**
 
 ```solidity
