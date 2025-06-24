@@ -381,9 +381,8 @@ abstract contract MultiHookAdapterBase is BaseHook, IMultiHookAdapterBase {
             // Try weighted hook interface first
             weightedFees[i] = _callHookForWeightedFee(subHooks[i], context, i);
             
-            // Add to combined delta if valid
-            if (weightedFees[i].isValid && 
-                uint160(address(subHooks[i])) & Hooks.BEFORE_SWAP_RETURNS_DELTA_FLAG != 0) {
+            // Add to combined delta if hook has delta returns flag
+            if (uint160(address(subHooks[i])) & Hooks.BEFORE_SWAP_RETURNS_DELTA_FLAG != 0) {
                 combinedDelta = _addBeforeSwapDelta(combinedDelta, beforeSwapHookReturns[poolId][i]);
             }
         }
