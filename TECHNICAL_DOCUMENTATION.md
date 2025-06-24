@@ -143,7 +143,7 @@ contract MultiHookAdapter is MultiHookAdapterBase {
 **Governance-controlled implementation with dynamic hook management**
 
 ```solidity
-contract PermissionedMultiHookAdapter is MultiHookAdapterBaseV2 {
+contract PermissionedMultiHookAdapter is MultiHookAdapterBase {
     // Dynamic hook addition/removal for live pools
     // Governance-controlled hook approval registry
     // Hook manager role for operational management
@@ -158,7 +158,7 @@ contract PermissionedMultiHookAdapter is MultiHookAdapterBaseV2 {
 - ✅ **Batch Operations**: Efficient bulk hook operations
 - ✅ **Pool Evolution**: Adapt strategies without liquidity migration
 
-### 5. Factory System
+### 4. Factory System
 **Sophisticated deployment infrastructure**
 
 ```solidity
