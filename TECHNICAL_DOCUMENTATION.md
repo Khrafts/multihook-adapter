@@ -182,7 +182,80 @@ contract AdapterDeploymentHelper {
 ## Fee Calculation System
 
 ### Overview
-The advanced fee calculation system allows users to choose from multiple strategies for resolving fee conflicts when multiple hooks attempt to override swap fees.
+The advanced fee calculation system allows users to choose from multiple strategies for resolving fee conflicts when multiple hooks attempt to override swap fees. The system is initialized automatically during contract deployment and provides flexible configuration options for different pool strategies.
+
+### Fee Calculation Initialization
+
+#### Constructor Implementation
+The fee calculation system is set in motion during contract construction:
+
+```solidity
+constructor(
+    IPoolManager _poolManager,
+    uint24 _defaultFee,
+    address _governance,
+    bool _governanceEnabled
+) BaseHook(_poolManager) {
+    // 1. Validate default fee (must be ≤ 100%)
+    if (_defaultFee > 1_000_000) revert InvalidFee(_defaultFee);
+    
+    // 2. Set immutable configuration
+    defaultFee = _defaultFee;                    // Fallback fee for pools
+    governance = _governance;                    // Governance address
+    governanceEnabled = _governanceEnabled;     // Enable/disable governance
+    
+    // 3. Deploy fee calculation strategy instance
+    feeCalculationStrategy = new FeeCalculationStrategy();
+}
+```
+
+#### Initialization Process Flow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 Fee System Initialization                   │
+├─────────────────────────────────────────────────────────────┤
+│ 1. Constructor Called                                       │
+│    ├─ Validate _defaultFee ≤ 1,000,000 (100%)             │
+│    ├─ Store defaultFee (immutable fallback)               │
+│    ├─ Store governance address                             │
+│    └─ Store governanceEnabled flag                         │
+│                                                            │
+│ 2. Deploy FeeCalculationStrategy                           │
+│    ├─ Creates new strategy contract instance               │
+│    ├─ Stored as immutable feeCalculationStrategy          │
+│    └─ Available for all fee calculations                  │
+│                                                            │
+│ 3. Pool Registration (per pool)                           │
+│    ├─ Initialize _poolFeeConfigs[poolId] on first hook reg │
+│    ├─ Set default method to WEIGHTED_AVERAGE              │
+│    ├─ Copy governance fee settings                        │
+│    └─ Set fallback to defaultFee                          │
+│                                                            │
+│ 4. Runtime Fee Calculation                                │
+│    ├─ Call feeCalculationStrategy.calculateFee()          │
+│    ├─ Apply selected method (WEIGHTED_AVERAGE by default) │
+│    ├─ Use pool-specific fee if set                        │
+│    └─ Fallback to defaultFee if no valid fees             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Pool-Specific Fee Configuration
+Each pool gets its own fee configuration initialized on first hook registration:
+
+```solidity
+// Initialize fee configuration if not set, preserving existing settings
+if (_poolFeeConfigs[poolId].defaultFee == 0) {
+    _poolFeeConfigs[poolId] = IFeeCalculationStrategy.FeeConfiguration({
+        defaultFee: defaultFee,                    // From constructor
+        governanceFee: governanceFee,              // Current governance fee
+        governanceFeeSet: governanceFeeSet,        // Whether governance fee is active
+        poolSpecificFee: 0,                       // No pool-specific fee initially
+        poolSpecificFeeSet: false,                // Pool-specific fee not set
+        method: IFeeCalculationStrategy.FeeCalculationMethod.WEIGHTED_AVERAGE  // Default method
+    });
+}
+```
 
 ### Fee Calculation Methods
 
