@@ -98,7 +98,7 @@ contract BeforeSwapTest is MultiHookAdapterBaseTest {
             BeforeSwapDeltaLibrary.getUnspecifiedDelta(hookDelta),
             "Unspecified delta mismatch"
         );
-        assertEq(resultFee, LPFeeLibrary.OVERRIDE_FEE_FLAG, "Fee override mismatch");
+        assertEq(resultFee, 3000, "Fee should be calculated by strategy when no hooks override");
     }
 
     // Test with multiple hooks and delta aggregation
