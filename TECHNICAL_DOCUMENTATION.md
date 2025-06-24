@@ -77,45 +77,53 @@ The MultiHookAdapter acts as an intelligent routing and aggregation layer that e
 
 ## Core Components
 
-### 1. MultiHookAdapterBase
-**Abstract base contract implementing core hook aggregation logic**
+### 1. MultiHookAdapterBase (Unified Core)
+**Comprehensive abstract base contract implementing complete hook aggregation logic with advanced fee calculation**
 
 ```solidity
-abstract contract MultiHookAdapterBase is BaseHook {
+abstract contract MultiHookAdapterBase is BaseHook, IMultiHookAdapterBase {
     // Core orchestration for all hook lifecycle callbacks
     // Delta aggregation for balance modifications
-    // Basic fee override resolution (last hook wins)
+    // Advanced fee calculation strategy system with 8 different methods
+    // Pool-specific fee configuration management
+    // Governance fee override capabilities
+    // Weighted hook execution support
     // Reentrancy protection and security measures
 }
 ```
 
-**Key Features:**
-- ✅ Hook execution orchestration for all Uniswap V4 callbacks
-- ✅ Delta aggregation for `beforeSwap`/`afterSwap` return values
-- ✅ Pool-specific hook registration management
-- ✅ Basic fee override resolution (last hook wins legacy behavior)
-- ✅ Comprehensive event logging for transparency
-
-### 2. MultiHookAdapterBaseV2
-**Enhanced version with advanced fee calculation strategies**
-
+**Core Constructor Implementation:**
 ```solidity
-abstract contract MultiHookAdapterBaseV2 is MultiHookAdapterBase {
-    // Advanced fee calculation strategy system
-    // Pool-specific fee configuration management
-    // Governance fee override capabilities
-    // Weighted hook execution support
+constructor(
+    IPoolManager _poolManager,
+    uint24 _defaultFee,
+    address _governance,
+    bool _governanceEnabled
+) BaseHook(_poolManager) {
+    if (_defaultFee > 1_000_000) revert InvalidFee(_defaultFee); // Max 100%
+    
+    defaultFee = _defaultFee;
+    governance = _governance;
+    governanceEnabled = _governanceEnabled;
+    
+    // Deploy fee calculation strategy instance
+    feeCalculationStrategy = new FeeCalculationStrategy();
 }
 ```
 
-**Enhanced Features:**
+**Comprehensive Features:**
+- ✅ **Hook Execution Orchestration**: Complete support for all Uniswap V4 lifecycle callbacks
+- ✅ **Delta Aggregation**: Advanced aggregation for `beforeSwap`/`afterSwap` balance modifications
 - ✅ **8 Fee Calculation Strategies**: WEIGHTED_AVERAGE, MEAN, MEDIAN, FIRST_OVERRIDE, LAST_OVERRIDE, MIN_FEE, MAX_FEE, GOVERNANCE_ONLY
 - ✅ **User-Selectable Methods**: Per-pool fee calculation method configuration
 - ✅ **Pool-Specific Overrides**: Custom fee rates per pool
-- ✅ **Governance Integration**: Protocol-level fee management
-- ✅ **Hook Weighting**: Priority-based fee calculations
+- ✅ **Governance Integration**: Protocol-level fee management and governance fee setting
+- ✅ **Hook Weighting**: Priority-based fee calculations with weighted execution
+- ✅ **Pool-Specific Hook Registration**: Independent hook management per pool
+- ✅ **Comprehensive Event Logging**: Complete transparency and auditability
+- ✅ **Security & Access Controls**: Reentrancy protection and role-based permissions
 
-### 3. MultiHookAdapter (Immutable)
+### 2. MultiHookAdapter (Immutable)
 **Concrete implementation with fixed hook sets**
 
 ```solidity
