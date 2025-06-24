@@ -363,8 +363,8 @@ contract BeforeSwapTest is MultiHookAdapterBaseTest {
         (bytes4 selector, BeforeSwapDelta resultDelta, uint24 resultFee) =
             adapter.beforeSwap(sender, testPoolKey, testParams, hookData);
 
-        // Verify no fee override is applied
-        assertEq(resultFee, LPFeeLibrary.OVERRIDE_FEE_FLAG, "Fee should remain at OVERRIDE_FEE_FLAG");
+        // Verify no fee override is applied - should use fallback fee calculation
+        assertEq(resultFee, 3000, "Fee should be calculated by strategy when no hooks override");
     }
 
     // Test multiple hooks with fee overrides (last one should win)
